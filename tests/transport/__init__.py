@@ -1,0 +1,1 @@
+"""Transport layer tests for MCP AMD SMI server."""

@@ -1,0 +1,15 @@
+# Core dependencies
+mcp>=1.0.0
+fastmcp>=0.1.0
+rich>=13.3.5
+pydantic>=2.0.0
+amdsmi==6.4.0
+
+# Development dependencies
+pytest>=7.3.1
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+black>=23.3.0
+flake8>=6.0.0
+isort>=5.12.0
+mypy>=1.3.0

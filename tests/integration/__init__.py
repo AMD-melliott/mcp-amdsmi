@@ -1,0 +1,1 @@
+"""Integration tests for MCP AMD SMI server."""

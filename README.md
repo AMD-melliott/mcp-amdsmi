@@ -1,149 +1,3 @@
-## HTTP Transport Usage Examples
-
-### Basic HTTP Client Example
-
-```python
-import requests
-import json
-
-# Initialize session
-response = requests.post('http://localhost:8000/mcp', json={
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-        "protocolVersion": "2025-03-26",
-        "capabilities": {},
-        "clientInfo": {
-            "name": "Python Client",
-            "version": "1.0.0"
-        }
-    }
-})
-
-# Extract session ID from response header
-session_id = response.headers.get('Mcp-Session-Id')
-print(f"Session ID: {session_id}")
-
-# Send initialized notification
-requests.post('http://localhost:8000/mcp', 
-    json={
-        "jsonrpc": "2.0",
-        "method": "notifications/initialized"
-    },
-    headers={'Mcp-Session-Id': session_id}
-)
-
-# List available tools
-tools_response = requests.post('http://localhost:8000/mcp',
-    json={
-        "jsonrpc": "2.0",
-        "id": 2,
-        "method": "tools/list"
-    },
-    headers={'Mcp-Session-Id': session_id}
-)
-
-print("Available tools:", tools_response.json())
-
-# Call a tool
-gpu_discovery = requests.post('http://localhost:8000/mcp',
-    json={
-        "jsonrpc": "2.0",
-        "id": 3,
-        "method": "tools/call",
-        "params": {
-            "name": "get_gpu_discovery",
-            "arguments": {}
-        }
-    },
-    headers={'Mcp-Session-Id': session_id}
-)
-
-print("GPU Discovery:", gpu_discovery.json())
-```
-
-### SSE Streaming Example
-
-```python
-import requests
-import json
-
-# Initialize session first (same as above)
-# ...
-
-# Connect to SSE stream
-sse_response = requests.get('http://localhost:8000/mcp',
-    headers={
-        'Mcp-Session-Id': session_id,
-        'Accept': 'text/event-stream'
-    },
-    stream=True
-)
-
-# Process SSE events
-for line in sse_response.iter_lines():
-    if line:
-        if line.startswith(b'data:'):
-            data = json.loads(line[5:])  # Remove 'data:' prefix
-            print(f"SSE Event: {data}")
-```
-
-### cURL Examples
-
-```bash
-# Initialize session
-curl -X POST http://localhost:8000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2025-03-26",
-      "capabilities": {},
-      "clientInfo": {
-        "name": "curl",
-        "version": "1.0.0"
-      }
-    }
-  }' -v
-
-# Extract session ID from response header and use it
-# Replace {SESSION_ID} with the actual session ID
-
-# List tools
-curl -X POST http://localhost:8000/mcp \
-  -H "Content-Type: application/json" \
-  -H "Mcp-Session-Id: {SESSION_ID}" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 2,
-    "method": "tools/list"
-  }'
-
-# Call GPU discovery tool
-curl -X POST http://localhost:8000/mcp \
-  -H "Content-Type: application/json" \
-  -H "Mcp-Session-Id: {SESSION_ID}" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 3,
-    "method": "tools/call",
-    "params": {
-      "name": "get_gpu_discovery",
-      "arguments": {}
-    }
-  }'
-
-# Health check
-curl -X GET http://localhost:8000/health
-
-# Terminate session
-curl -X DELETE http://localhost:8000/mcp \
-  -H "Mcp-Session-Id: {SESSION_ID}"
-```
-
 # AMD SMI MCP Server
 
 A Model Context Protocol (MCP) server created for PEARC25 that provides conversational access to AMD GPU monitoring capabilities. Designed for infrastructure monitoring, and basic performance analysis.
@@ -161,7 +15,7 @@ A Model Context Protocol (MCP) server created for PEARC25 that provides conversa
 ### Prerequisites
 
 - Python 3.11+
-- AMD GPU with ROCm/AMD SMI installed (or any system for demo mode)
+- AMD GPU with ROCm and AMD SMI installed
 - Git
 
 ### Installation
@@ -191,7 +45,7 @@ A Model Context Protocol (MCP) server created for PEARC25 that provides conversa
    git clone <repository-url>
    cd mcp-amdsmi
    python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate
    ```
 
 2. **Install in development mode:**
@@ -376,15 +230,6 @@ The system consists of three main layers:
 2. **Business Logic Layer** (`HealthAnalyzer`, `PerformanceInterpreter`) - Provides intelligent analysis and recommendations
 3. **MCP Server Layer** (FastMCP-based) - Exposes functionality as conversational tools
 
-## Demo Mode
-
-The server automatically falls back to demo mode when:
-- No AMD GPUs are detected
-- AMD SMI library is unavailable
-- Hardware access fails
-
-Demo mode provides realistic mock data for development and testing.
-
 ## N/A Value Handling
 
 The server gracefully handles missing or "N/A" values common in:
@@ -423,15 +268,6 @@ black src/                     # Code formatting
 flake8 src/                    # Linting
 mypy src/                      # Type checking
 ```
-
-## Workshop Integration
-
-Designed for PEARC25 workshop demonstrations:
-- 30-second response times for single GPU queries
-- Support for 30 concurrent users
-- Educational explanations and visual indicators
-- Fallback modes for demonstration reliability
-
 ## Troubleshooting
 
 ### Common Issues
@@ -492,11 +328,3 @@ Enable debug logging by setting environment variable:
 export PYTHONPATH=/path/to/mcp-amdsmi
 export LOG_LEVEL=DEBUG
 ```
-
-## License
-
-[License information to be added]
-
-## Contributing
-
-[Contributing guidelines to be added]

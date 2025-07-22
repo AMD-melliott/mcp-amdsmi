@@ -92,13 +92,13 @@ For remote deployments or when you need HTTP access, run the server in HTTP mode
 
 ```bash
 # Start HTTP server (default: localhost:8000)
-mcp-amdsmi --transport http
+python3 -m mcp_amdsmi.unified_server --transport http
 
 # Custom host and port
-mcp-amdsmi --transport http --host 0.0.0.0 --port 8080
+python3 -m mcp_amdsmi.unified_server --transport http --host 0.0.0.0 --port 8080
 
 # With custom session timeout (default: 3600 seconds)
-mcp-amdsmi --transport http --session-timeout 7200
+python3 -m mcp_amdsmi.unified_server --transport http --session-timeout 7200
 ```
 
 **HTTP Transport Features:**
@@ -119,10 +119,7 @@ For MCP clients that support HTTP transport:
   "mcpServers": {
     "mcp-amdsmi": {
       "transport": "http",
-      "url": "http://localhost:8000/mcp",
-      "headers": {
-        "Content-Type": "application/json"
-      }
+      "url": "http://127.0.0.1:8001/mcp"
     }
   }
 }

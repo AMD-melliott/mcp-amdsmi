@@ -1,6 +1,12 @@
 # AMD SMI MCP Server
 
-A Model Context Protocol (MCP) server created for PEARC25 that provides conversational access to AMD GPU monitoring capabilities. Designed for infrastructure monitoring, and basic performance analysis.
+> **⚠️ DEMONSTRATION ONLY ⚠️**
+> 
+> This is a demonstration project created for PEARC25. It is **NOT intended for production use**. This server is designed for educational, research, and demonstration purposes only. For production GPU monitoring, please use enterprise-grade monitoring solutions with proper security, reliability, and support guarantees.
+> 
+> **Security Notice:** This server may expose system information and should only be used in trusted environments.
+
+A Model Context Protocol (MCP) server created for PEARC25 that provides conversational access to AMD GPU monitoring capabilities. Designed for infrastructure monitoring demonstrations and basic performance analysis.
 
 ## Features
 
@@ -15,8 +21,10 @@ A Model Context Protocol (MCP) server created for PEARC25 that provides conversa
 ### Prerequisites
 
 - Python 3.11+
-- AMD GPU with ROCm and AMD SMI installed
+- AMD GPU with ROCm 5.0+ and AMD SMI installed (for hardware monitoring)
 - Git
+
+**Note:** The server includes demo mode functionality and will work on systems without AMD hardware for testing purposes.
 
 ### Installation
 
@@ -24,7 +32,7 @@ A Model Context Protocol (MCP) server created for PEARC25 that provides conversa
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AMD-melliott/mcp-amdsmi.git
    cd mcp-amdsmi
    ```
 
@@ -42,7 +50,7 @@ A Model Context Protocol (MCP) server created for PEARC25 that provides conversa
 
 1. **Clone and create virtual environment:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AMD-melliott/mcp-amdsmi.git
    cd mcp-amdsmi
    python3 -m venv venv
    source venv/bin/activate
@@ -119,7 +127,7 @@ For MCP clients that support HTTP transport:
   "mcpServers": {
     "mcp-amdsmi": {
       "transport": "http",
-      "url": "http://127.0.0.1:8001/mcp"
+      "url": "http://127.0.0.1:8000/mcp"
     }
   }
 }
@@ -211,7 +219,7 @@ Comprehensive GPU health assessment with recommendations.
 
 ## Example Usage
 
-Once integrated with Claude Code, you can use natural language queries:
+Once integrated with an MCP client (such as Claude Desktop), you can use natural language queries:
 
 - *"What GPUs are available in the system?"*
 - *"Check the health of GPU 0"*
@@ -241,7 +249,7 @@ Missing values receive neutral health scores (80.0) and don't cause failures.
 ### Project Structure
 ```
 mcp-amdsmi/
-├── src/amd_smi_mcp/
+├── mcp_amdsmi/
 │   ├── server.py              # FastMCP server with tool definitions
 │   ├── amd_smi_wrapper.py     # AMD SMI library abstraction
 │   └── business_logic.py      # Health analysis and performance interpretation
@@ -261,32 +269,30 @@ pytest                         # Unit tests (if available)
 ### Code Quality
 ```bash
 source venv/bin/activate
-black src/                     # Code formatting
-flake8 src/                    # Linting
-mypy src/                      # Type checking
+black mcp_amdsmi/             # Code formatting
+flake8 mcp_amdsmi/            # Linting
+mypy mcp_amdsmi/              # Type checking
 ```
 ## Troubleshooting
 
 ### Common Issues
 
-**1. "amdsmi library not available"**
+*"amdsmi library not available"*
 - Install ROCm and AMD SMI library
 - Server will automatically use demo mode if unavailable
 
-**2. "No AMD GPU devices found"**
+*"No AMD GPU devices found"*
 - Check GPU hardware installation
 - Verify driver installation
 - Server continues in demo mode
 
-**3. "Permission denied" errors**
+*"Permission denied" errors*
 - Ensure user has GPU access permissions
 - May require adding user to appropriate groups
 
-**4. Import errors in Claude Code**
+*Import errors in MCP clients*
 - Verify `cwd` and `PYTHONPATH` in MCP configuration
 - Ensure virtual environment activation if using venv
-
-**5. HTTP Transport Issues**
 
 *Connection refused or server not responding:*
 - Verify server is running in HTTP mode: `mcp-amdsmi --transport http`
@@ -321,6 +327,7 @@ mypy src/                      # Type checking
 ### Logging
 
 Enable debug logging by setting environment variable:
+
 ```bash
 export PYTHONPATH=/path/to/mcp-amdsmi
 export LOG_LEVEL=DEBUG
